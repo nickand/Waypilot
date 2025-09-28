@@ -68,6 +68,15 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
+    // Room
+    val room = "2.6.1"
+    implementation("androidx.room:room-ktx:$room")
+    implementation("androidx.room:room-runtime:$room")
+    ksp("androidx.room:room-compiler:$room")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+
 // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

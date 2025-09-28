@@ -4,13 +4,13 @@ import java.time.LocalDate
 
 data class Trip(
     val id: String,
-    val title: String,                 // e.g. "Trip to Paris"
-    val destinationCity: String,       // "Paris"
-    val country: String,               // "France"
+    val title: String,
+    val destinationCity: String,
+    val country: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val travelersCount: Int = 1,
-    val style: TripStyle = TripStyle.SOLO,
+    val style: TripStyle = TripStyle.SOLO,   // <- FQN
     val coverImageUrl: String? = null,
     val budget: Budget? = null,
     val flights: List<FlightSegment> = emptyList(),

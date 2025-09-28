@@ -1,5 +1,5 @@
 // ui/theme/screens/TripsHome.kt
-package com.ddn.waypilot.ui.theme.screens
+package com.ddn.waypilot.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -15,25 +15,34 @@ import androidx.compose.material.icons.outlined.TravelExplore
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ddn.waypilot.data.Trip
 import com.ddn.waypilot.nav.Dest
 import com.ddn.waypilot.ui.theme.*
 import com.ddn.waypilot.ui.theme.components.TripCard
+import com.ddn.waypilot.ui.trips.TripsHomeViewModel
 
 @Composable
 fun TripsHome(
     nav: NavHostController,
-    trips: List<Trip>,
+    vm: TripsHomeViewModel = hiltViewModel(),
     onTripClick: (Trip) -> Unit
 ) {
+    LaunchedEffect(Unit) { vm.load() }
+    val trips by vm.state.collectAsState()
+
     Column(
         Modifier
             .fillMaxSize()
@@ -192,7 +201,7 @@ private fun AiPlannerCard(onTry: () -> Unit) {
 
 @Composable
 private fun RoundIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit
 ) {
     Box(

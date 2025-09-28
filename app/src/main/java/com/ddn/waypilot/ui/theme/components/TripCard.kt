@@ -2,39 +2,19 @@ package com.ddn.waypilot.ui.theme.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -42,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.ddn.waypilot.R
@@ -58,7 +37,7 @@ fun TripCard(
     modifier: Modifier = Modifier,
     onClick: (Trip) -> Unit = {}
 ) {
-    val isPreview = false //LocalInspectionMode.current
+    val isPreview = LocalInspectionMode.current
 
     Card(
         onClick = { onClick(trip) },
@@ -67,58 +46,49 @@ fun TripCard(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        // Cover image with gradient overlay (Airbnb-like)
+        // ======== Cover area (imagen + gradiente + overlays) ========
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
-                .drawWithContent {
-                    drawContent()
-                    drawRect(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color(0xAA000000)),
-                            startY = size.height / 3f,
-                            endY = size.height
-                        )
-                    )
-                }
         ) {
-            if (isPreview) {
-                // En Preview no hay red: usa recurso local
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else if (!trip.coverImageUrl.isNullOrBlank()) {
-                // Runtime: carga con Coil 3
+            // Imagen (URL/URI con Coil) o placeholder local
+            if (!isPreview && !trip.coverImageUrl.isNullOrBlank()) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(trip.coverImageUrl)
+                        .data(trip.coverImageUrl)   // admite https:// o content://
                         .crossfade(true)
                         .build(),
                     contentDescription = null,
-                    placeholder = painterResource(R.drawable.ic_launcher_background),
-                    error = painterResource(R.drawable.ic_launcher_background),
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.bg_itinerary_default),
+                    error = painterResource(R.drawable.bg_itinerary_default)
                 )
             } else {
-                // Fallback: icono genérico si no hay URL
                 Image(
-                    painter = painterResource(android.R.drawable.ic_menu_mapmode),
+                    painter = painterResource(R.drawable.bg_itinerary_default),
                     contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFECECEC)),
+                    modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
             }
 
-            // Top-right badges (flights/hotels counts)
+            // Gradiente para legibilidad del texto
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color(0xAA000000)),
+                            startY = 0.45f * 220.dp.value, // aprox mitad inferior
+                            endY = Float.POSITIVE_INFINITY
+                        )
+                    )
+            )
+
+            // Badges top-right (conteos)
             Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -129,7 +99,7 @@ fun TripCard(
                 CounterPill(icon = Icons.Default.Hotel, count = trip.hotels.size)
             }
 
-            // Bottom text overlay
+            // Texto inferior sobre la imagen
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -155,9 +125,10 @@ fun TripCard(
                         label = { Text(trip.style.toChipText()) }
                     )
                     Spacer(Modifier.width(12.dp))
-                    val pct = (trip.progressRatio() * 100).toInt()
+                    val ratio = trip.progressRatio()
+                    val pct = (ratio * 100).toInt()
                     LinearProgressIndicator(
-                        progress = { trip.progressRatio() },
+                        progress = { ratio },
                         modifier = Modifier
                             .weight(1f)
                             .height(6.dp)
@@ -171,17 +142,16 @@ fun TripCard(
             }
         }
 
-        // Bottom meta row
+        // ======== Fila inferior con meta ========
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // budget hint
+            // Budget (tu Budget solo tiene currencyCode + estimatedTotal)
             val budgetText = trip.budget?.let { b ->
-                val total = b.estimatedTotal ?: b.max ?: b.min
-                total?.let { "~${b.currencyCode} ${"%,.0f".format(it)}" } ?: "—"
+                b.estimatedTotal?.let { "~${b.currencyCode} ${"%,.0f".format(it)}" }
             } ?: "—"
 
             Text(
@@ -190,9 +160,8 @@ fun TripCard(
                 modifier = Modifier.weight(1f)
             )
 
-            // small map button
             FilledTonalButton(
-                onClick = { /* open map screen */ },
+                onClick = { /* TODO: open map screen */ },
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Icon(Icons.Default.Map, contentDescription = null)
