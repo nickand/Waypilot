@@ -44,6 +44,9 @@ fun AddTripScreen(
         coverUri = uri?.toString()
     }
 
+    var styleMenuExpanded by remember { mutableStateOf(false) }
+    val tripStyleOptions = TripStyle.values()
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("Add Trip") }) },
         bottomBar = {
@@ -135,18 +138,33 @@ fun AddTripScreen(
 
             item {
                 ExposedDropdownMenuBox(
-                    expanded = false,
-                    onExpandedChange = { /* TODO abrir menú */ }
+                    expanded = styleMenuExpanded,
+                    onExpandedChange = { styleMenuExpanded = !styleMenuExpanded }
                 ) {
                     OutlinedTextField(
                         value = style.name,
                         onValueChange = {},
                         label = { Text("Style") },
                         readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = styleMenuExpanded) },
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth()
                     )
+                    ExposedDropdownMenu(
+                        expanded = styleMenuExpanded,
+                        onDismissRequest = { styleMenuExpanded = false }
+                    ) {
+                        tripStyleOptions.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption.name) },
+                                onClick = {
+                                    style = selectionOption
+                                    styleMenuExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
