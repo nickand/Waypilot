@@ -2,6 +2,17 @@
 .gradle/
 build/
 
+# Built application files
+*.apk
+*.aab
+output-metadata.json
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -12,16 +23,10 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
-*.aab
-*.apk
-output-metadata.json
 
-# IntelliJ
-*.iml
+# IntelliJ / Android Studio
 .idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+*.iml
 
 # Keystore files
 *.jks
@@ -32,3 +37,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Android Studio Navigation editor files
+.navigation/
