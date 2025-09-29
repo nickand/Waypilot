@@ -5,12 +5,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ddn.waypilot.data.TripStyle
+import com.ddn.waypilot.ui.screens.components.NumberStepper
 import com.ddn.waypilot.ui.theme.components.TripCoverPickerPreview
 import com.ddn.waypilot.ui.trips.AddTripViewModel
 import java.time.LocalDate
@@ -27,10 +34,9 @@ fun AddTripScreen(
     var start by remember { mutableStateOf(LocalDate.now().plusDays(7)) }
     var end by remember { mutableStateOf(start.plusDays(4)) }
     var travelers by remember { mutableStateOf(2) }
-    var style by remember { mutableStateOf(TripStyle.SOLO) } // no null
+    var style by remember { mutableStateOf(TripStyle.SOLO) }
     var currency by remember { mutableStateOf("USD") }
     var budget by remember { mutableStateOf(0.0) }
-    // NUEVO: estado para la imagen y launcher del picker
     var coverUri by remember { mutableStateOf<String?>(null) }
     val pickImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -46,7 +52,7 @@ fun AddTripScreen(
                     onClick = {
                         vm.addBasicTrip(
                             title, city, country, start, end, travelers,
-                            style, currency, budget, coverUri            // <-- pasa portada
+                            style, currency, budget, coverUri
                         ) { onDone() }
                     },
                     modifier = Modifier
@@ -56,20 +62,18 @@ fun AddTripScreen(
             }
         }
     ) { innerPadding ->
-        // Usamos LazyColumn para scroll, y agregamos padding inferior para no quedar debajo del botón
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding(), // evita que el teclado tape campos
+                .imePadding(),
             contentPadding = PaddingValues(
                 start = 16.dp,
                 end = 16.dp,
                 top = innerPadding.calculateTopPadding() + 16.dp,
-                bottom = 16.dp + 80.dp // espacio extra para el bottomBar
+                bottom = 16.dp + 80.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp) // Ajustado para mejor espaciado
         ) {
-            // --- Portada (preview + botón) ---
             item {
                 TripCoverPickerPreview(
                     cover = coverUri,
@@ -101,7 +105,6 @@ fun AddTripScreen(
                 )
             }
 
-            // Fechas (por ahora readOnly; luego puedes abrir date pickers al tocar)
             item {
                 OutlinedTextField(
                     value = start.toString(),
@@ -122,22 +125,21 @@ fun AddTripScreen(
             }
 
             item {
-                OutlinedTextField(
-                    value = travelers.toString(),
-                    onValueChange = { v -> v.toIntOrNull()?.let { travelers = it } },
-                    label = { Text("Travelers") },
-                    modifier = Modifier.fillMaxWidth()
+                NumberStepper(
+                    value = travelers,
+                    onValueChange = { travelers = it },
+                    label = "Travelers",
+                    minValue = 1
                 )
             }
 
-            // Selector simple de estilo (placeholder; luego lo cambias por menú real)
             item {
                 ExposedDropdownMenuBox(
                     expanded = false,
                     onExpandedChange = { /* TODO abrir menú */ }
                 ) {
                     OutlinedTextField(
-                        value = style.name, // ya no nullable
+                        value = style.name,
                         onValueChange = {},
                         label = { Text("Style") },
                         readOnly = true,
