@@ -1,8 +1,8 @@
 package com.ddn.waypilot.ui.trips
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.SavedStateHandle
 import com.ddn.waypilot.data.Trip
 import com.ddn.waypilot.data.TripsRepository
 import com.ddn.waypilot.nav.Dest
@@ -25,6 +25,12 @@ class ItineraryDetailViewModel @Inject constructor(
         viewModelScope.launch {
             trip = repo.get(id)
             // Si usas Compose State, puedes migrar a StateFlow/MutableStateFlow
+        }
+    }
+
+    fun deleteTrip(trip: Trip) {
+        viewModelScope.launch {
+            repo.deleteTrip(trip)
         }
     }
 }

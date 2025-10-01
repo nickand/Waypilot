@@ -5,33 +5,40 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ddn.waypilot.data.Trip
 import com.ddn.waypilot.plus
 import com.ddn.waypilot.timeFormatter
 import com.ddn.waypilot.ui.theme.components.ListCard
 import com.ddn.waypilot.ui.theme.components.SectionHeader
 import com.ddn.waypilot.ui.theme.components.TripCover
+import com.ddn.waypilot.ui.trips.ItineraryDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,8 +46,25 @@ fun ItineraryDetailScreen(
     trip: Trip,
     onBack: () -> Unit = {},
     onShare: () -> Unit = {},
-    onMore: () -> Unit = {}
+    onMore: () -> Unit = {}, // This specific onMore might be replaced or augmented
+    // onDeleteTrip: () -> Unit = {} // Replaced by dialog and ViewModel call
+    vm: ItineraryDetailViewModel = hiltViewModel()
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        DeleteConfirmationDialog(
+            tripTitle = trip.title,
+            onConfirm = {
+                showDeleteDialog = false
+                vm.deleteTrip(trip) // Assuming vm.deleteTrip(trip) will be implemented
+                onBack() // Navigate back after deletion
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,7 +74,27 @@ fun ItineraryDetailScreen(
                 title = { Text(trip.title) },
                 actions = {
                     IconButton(onClick = onShare) { Icon(Icons.Default.Share, null) }
-                    IconButton(onClick = onMore) { Icon(Icons.Default.MoreVert, null) }
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Delete Trip") },
+                                onClick = {
+                                    showDeleteDialog = true
+                                    showMenu = false
+                                },
+                                leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = "Delete Trip") }
+                            )
+                            // You can add other items to onMore here if needed
+                            // For example, if the original onMore had other specific actions:
+                            // DropdownMenuItem(text = { Text("Other Option") }, onClick = { onMore(); showMenu = false })
+                        }
+                    }
                 }
             )
         },
@@ -166,6 +210,29 @@ fun ItineraryDetailScreen(
             item { Spacer(Modifier.height(64.dp)) }
         }
     }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    tripTitle: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Trip") },
+        text = { Text("Are you sure you want to delete '$tripTitle'? This action cannot be undone.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable

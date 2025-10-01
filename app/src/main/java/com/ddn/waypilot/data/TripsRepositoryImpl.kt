@@ -25,7 +25,13 @@ class TripsRepositoryImpl @Inject constructor(
         dao.insertTripWithRelations(trip.toRoomGraph())
     }
 
-    override suspend fun delete(id: String) {
+    override suspend fun delete(id: String) { // Existing method
         dao.deleteTrip(id)
+    }
+
+    override suspend fun deleteTrip(trip: Trip) { // New method implementation
+        // Assuming Trip data class has an 'id' property of type String
+        // to match the existing dao.deleteTrip(id: String)
+        dao.deleteTrip(trip.id) 
     }
 }

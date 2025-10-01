@@ -7,5 +7,6 @@ interface TripsRepository {
     suspend fun list(): List<Trip>
     suspend fun get(id: String): Trip?
     suspend fun add(trip: Trip)
-    suspend fun delete(id: String)
+    suspend fun delete(id: String) // Existing method
+    suspend fun deleteTrip(trip: Trip) // New method to match ViewModel call
 }
