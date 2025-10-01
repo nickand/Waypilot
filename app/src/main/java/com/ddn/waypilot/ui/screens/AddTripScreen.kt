@@ -73,7 +73,7 @@ fun AddTripScreen(
     }
 
     var styleMenuExpanded by remember { mutableStateOf(false) }
-    val tripStyleOptions = TripStyle.values()
+    val tripStyleOptions = TripStyle.entries.toTypedArray()
 
     val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE // Or your preferred format
 
