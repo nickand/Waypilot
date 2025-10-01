@@ -58,7 +58,6 @@ fun AddTripScreen(
 ) {
     var title by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
     var start by remember { mutableStateOf(LocalDate.now().plusDays(7)) }
     var end by remember { mutableStateOf(start.plusDays(4)) }
     var travelers by remember { mutableStateOf(2) }
@@ -140,7 +139,7 @@ fun AddTripScreen(
                 Button(
                     onClick = {
                         vm.addBasicTrip(
-                            title, city, country, start, end, travelers,
+                            title, city, start, end, travelers,
                             style, currency, budget, coverUri
                         ) { onDone() }
                     },
@@ -185,15 +184,6 @@ fun AddTripScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            item {
-                OutlinedTextField(
-                    value = country,
-                    onValueChange = { country = it },
-                    label = { Text("Country") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
             item {
                 OutlinedTextField(
                     value = start.format(dateFormatter),

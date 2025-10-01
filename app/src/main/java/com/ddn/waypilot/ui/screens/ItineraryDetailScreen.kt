@@ -242,7 +242,7 @@ private fun TripSummaryCard(trip: Trip) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${trip.destinationCity}, ${trip.country}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(trip.destinationCity, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("${trip.startDate} – ${trip.endDate}", style = MaterialTheme.typography.bodyMedium)
             Text("Travelers: ${trip.travelersCount}", style = MaterialTheme.typography.bodyMedium)
             trip.budget?.let { b ->

@@ -20,7 +20,6 @@ class AddTripViewModel @Inject constructor(
     fun addBasicTrip(
         title: String,
         city: String,
-        country: String,
         start: LocalDate,
         end: LocalDate,
         travelers: Int,
@@ -34,7 +33,6 @@ class AddTripViewModel @Inject constructor(
                 id = "t-" + UUID.randomUUID().toString().take(8),
                 title = title,
                 destinationCity = city,
-                country = country,
                 startDate = start,
                 endDate = end,
                 travelersCount = travelers,

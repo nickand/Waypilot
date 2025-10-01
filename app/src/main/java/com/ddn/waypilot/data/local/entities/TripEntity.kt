@@ -9,7 +9,6 @@ data class TripEntity(
     @PrimaryKey val id: String,
     val title: String,
     val destinationCity: String,
-    val country: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val travelersCount: Int,

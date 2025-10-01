@@ -35,7 +35,6 @@ object FakeTripsRepo : TripsRepository {
             id = id,
             title = title,
             destinationCity = "Paris",
-            country = "France",
             startDate = start,
             endDate = end,
             travelersCount = 2,

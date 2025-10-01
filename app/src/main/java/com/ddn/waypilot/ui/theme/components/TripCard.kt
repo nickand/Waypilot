@@ -113,7 +113,7 @@ fun TripCard(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "${trip.destinationCity}, ${trip.country} • ${trip.datesShort()}",
+                    text = "${trip.destinationCity} • ${trip.datesShort()}",
                     style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.9f)),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
