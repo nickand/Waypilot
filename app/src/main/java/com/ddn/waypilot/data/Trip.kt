@@ -16,5 +16,6 @@ data class Trip(
     val hotels: List<HotelBooking> = emptyList(),
     val activities: List<ActivityItem> = emptyList(),
     val restaurants: List<RestaurantReservation> = emptyList(),
-    val notes: String? = null
+    val notes: String? = null,
+    val destinations: List<Destination> = emptyList()
 )

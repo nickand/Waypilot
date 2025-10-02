@@ -2,10 +2,7 @@ package com.ddn.waypilot.ui.trips
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ddn.waypilot.data.Budget
-import com.ddn.waypilot.data.Trip
-import com.ddn.waypilot.data.TripStyle
-import com.ddn.waypilot.data.TripsRepository
+import com.ddn.waypilot.data.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -19,32 +16,36 @@ class AddTripViewModel @Inject constructor(
 
     fun addBasicTrip(
         title: String,
-        city: String,
+        destinations: List<Destination>,   // <--- NUEVO
         start: LocalDate,
         end: LocalDate,
         travelers: Int,
-        style: TripStyle,  // <- FQN aquí
+        style: TripStyle,
         budgetCurrency: String?,
         budgetTotal: Double?,
         coverImageUrl: String?,
-        onDone: () -> Unit) {
+        onDone: () -> Unit
+    ) {
         viewModelScope.launch {
+            val summaryCity = destinations.firstOrNull()?.name ?: ""
+
             val trip = Trip(
                 id = "t-" + UUID.randomUUID().toString().take(8),
                 title = title,
-                destinationCity = city,
+                destinationCity = summaryCity, // compatibilidad con TripEntity
                 startDate = start,
                 endDate = end,
                 travelersCount = travelers,
                 style = style,
-                coverImageUrl = coverImageUrl,   // <-- se asigna aquí
+                coverImageUrl = coverImageUrl,
                 budget = if (budgetCurrency != null || budgetTotal != null)
                     Budget(budgetCurrency ?: "USD", budgetTotal ?: 0.0) else null,
                 flights = emptyList(),
                 hotels = emptyList(),
                 activities = emptyList(),
                 restaurants = emptyList(),
-                notes = null
+                notes = null,
+                destinations = destinations      // <--- NUEVO
             )
             repo.add(trip)
             onDone()

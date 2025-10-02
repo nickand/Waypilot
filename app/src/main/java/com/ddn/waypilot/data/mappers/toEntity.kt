@@ -4,6 +4,7 @@ package com.ddn.waypilot.data.mappers
 // ==== IMPORTS DEL DOMINIO (alias para evitar choques) ====
 import com.ddn.waypilot.data.ActivityItem
 import com.ddn.waypilot.data.Budget
+import com.ddn.waypilot.data.Destination
 import com.ddn.waypilot.data.FlightSegment
 import com.ddn.waypilot.data.HotelBooking
 import com.ddn.waypilot.data.RestaurantReservation
@@ -73,6 +74,18 @@ fun DomainRestaurantReservation.toEntity(tripId: String) = RestaurantEntity(
     confirmationCode = confirmationCode
 )
 
+// === NUEVO: destinos ===
+fun Destination.toEntity(tripId: String, orderIndex: Int) = DestinationEntity(
+    tripId = tripId,
+    orderIndex = orderIndex,
+    placeId = placeId,
+    name = name,
+    address = address,
+    lat = lat,
+    lng = lng,
+    notes = notes
+)
+
 fun DomainTrip.toRoomGraph(): TripWithRelations =
     TripWithRelations(
         trip = toEntity(),
@@ -80,11 +93,12 @@ fun DomainTrip.toRoomGraph(): TripWithRelations =
         hotels = hotels.map { it.toEntity(id) },
         activities = activities.map { it.toEntity(id) },
         restaurants = restaurants.map { it.toEntity(id) },
+        destinations = destinations.mapIndexed { idx, d -> d.toEntity(id, idx) }
     )
 
 /* ------------------ Room -> Domain ------------------ */
 
-fun TripWithRelations.toDomain(): com.ddn.waypilot.data.Trip =
+fun TripWithRelations.toDomain(): Trip =
     Trip(
         id = trip.id,
         title = trip.title,
@@ -127,7 +141,7 @@ fun TripWithRelations.toDomain(): com.ddn.waypilot.data.Trip =
                 category = it.category?.let { c ->
                     DomainActivityCategory.valueOf(c)
                 } ?: DomainActivityCategory.OTHER,
-                notes = null // si quieres mapear notas también
+                notes = null
             )
         },
         restaurants = restaurants.map {
@@ -138,5 +152,16 @@ fun TripWithRelations.toDomain(): com.ddn.waypilot.data.Trip =
                 confirmationCode = it.confirmationCode
             )
         },
-        notes = trip.notes
+        notes = trip.notes,
+        // === NUEVO: destinos ===
+        destinations = destinations.sortedBy { it.orderIndex }.map { e ->
+            Destination(
+                placeId = e.placeId,
+                name = e.name,
+                address = e.address,
+                lat = e.lat,
+                lng = e.lng,
+                notes = e.notes
+            )
+        }
     )

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Waypilot</string>
+    <string name="maps_api_key">AIzaSyDm-RzqJii-vAUF9oqu2e3fSwsHlbfp-ss</string>
 </resources>
