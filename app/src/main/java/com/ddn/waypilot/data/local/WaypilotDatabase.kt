@@ -11,12 +11,14 @@ import com.ddn.waypilot.data.local.entities.*
         FlightSegmentEntity::class,
         HotelBookingEntity::class,
         ActivityEntity::class,
-        RestaurantEntity::class
+        RestaurantEntity::class,
+        DestinationEntity::class        // <- NUEVA ENTIDAD
     ],
-    version = 1,
+    version = 2,                        // <- SUBE LA VERSIÓN
     exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class WaypilotDatabase : RoomDatabase() {
     abstract fun tripsDao(): TripsDao
 }
+

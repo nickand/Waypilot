@@ -21,7 +21,7 @@ object DatabaseModule {
     @Provides @Singleton
     fun provideDb(@ApplicationContext ctx: Context): WaypilotDatabase =
         Room.databaseBuilder(ctx, WaypilotDatabase::class.java, "waypilot.db")
-            .fallbackToDestructiveMigration() // cambia a migs reales cuando suba version
+            .fallbackToDestructiveMigration() // recrea DB al cambiar version
             .build()
 
     @Provides

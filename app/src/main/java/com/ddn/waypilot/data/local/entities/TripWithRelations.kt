@@ -5,12 +5,19 @@ import androidx.room.Relation
 
 data class TripWithRelations(
     @Embedded val trip: TripEntity,
+
     @Relation(parentColumn = "id", entityColumn = "tripId")
     val flights: List<FlightSegmentEntity>,
+
     @Relation(parentColumn = "id", entityColumn = "tripId")
     val hotels: List<HotelBookingEntity>,
+
     @Relation(parentColumn = "id", entityColumn = "tripId")
     val activities: List<ActivityEntity>,
+
     @Relation(parentColumn = "id", entityColumn = "tripId")
-    val restaurants: List<RestaurantEntity>
+    val restaurants: List<RestaurantEntity>,
+
+    @Relation(parentColumn = "id", entityColumn = "tripId", entity = DestinationEntity::class)
+    val destinations: List<DestinationEntity>
 )

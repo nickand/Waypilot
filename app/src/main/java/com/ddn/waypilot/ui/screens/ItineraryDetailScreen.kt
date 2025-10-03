@@ -115,6 +115,22 @@ fun ItineraryDetailScreen(
                 TripSummaryCard(trip = trip)
             }
 
+            // ===== Destinations =====
+            if (trip.destinations.isNotEmpty()) {
+                item { SectionHeader(icon = Icons.Default.Map, title = "Destinations") }
+                items(trip.destinations) { d ->
+                    ListCard {
+                        Text(d.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        d.address?.let {
+                            Spacer(Modifier.height(2.dp))
+                            Text(it, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                }
+            } else {
+                item { EmptySectionCard(icon = Icons.Default.Map, title = "No destinations yet", subtitle = "Add stops to build your route.") }
+            }
+
             // ===== Flights =====
             if (trip.flights.isNotEmpty()) {
                 item { SectionHeader(icon = Icons.Default.Flight, title = "Flights") }
@@ -245,6 +261,10 @@ private fun TripSummaryCard(trip: Trip) {
             Text(trip.destinationCity, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("${trip.startDate} – ${trip.endDate}", style = MaterialTheme.typography.bodyMedium)
             Text("Travelers: ${trip.travelersCount}", style = MaterialTheme.typography.bodyMedium)
+            trip.destinations.takeIf { it.isNotEmpty() }?.let {
+                val path = it.joinToString(" → ") { d -> d.name }
+                Text(path, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
             trip.budget?.let { b ->
                 Text("Budget: ${b.currencyCode} ${"%,.2f".format(b.estimatedTotal)}", style = MaterialTheme.typography.bodyMedium)
             }
